@@ -10,3 +10,5 @@ class BookModel(settings.Base):
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
     title: str = Column(String(100), nullable=False)
+    author: str = Column(String(100), nullable=False)
+    created_at: DateTime = Column(DateTime, default=datetime.datetime.now, nullable=False)

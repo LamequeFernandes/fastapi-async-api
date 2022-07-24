@@ -1,5 +1,8 @@
 from sqlalchemy import Column, Integer, String, DateTime
+
 from database.config import settings
+
+import datetime
 
 
 class UserModel(settings.Base):
@@ -9,4 +12,4 @@ class UserModel(settings.Base):
     name: str = Column(String(100), nullable=False)
     email: str = Column(String(200), nullable=False)
     password: str = Column(String(80), nullable=False)
-    created_at: DateTime = Column(DateTime, nullable=False)
+    created_at: DateTime = Column(DateTime, default=datetime.datetime.now, nullable=False)
