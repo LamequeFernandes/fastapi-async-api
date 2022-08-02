@@ -40,7 +40,6 @@ async def get_user(user_id: int, db: AsyncSession = Depends(get_session)):
         query = select(UserModel).filter(UserModel.id == user_id)
         result = await session.execute(query)
         user: UserModel = result.scalar_one_or_none()
-
         if user:
             return user
         raise HTTPException(detail='Usuario não encontrado', status_code=status.HTTP_404_NOT_FOUND)
