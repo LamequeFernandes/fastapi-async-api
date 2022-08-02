@@ -40,6 +40,7 @@ async def get_user(user_id: int, db: AsyncSession = Depends(get_session)):
         query = select(UserModel).filter(UserModel.id == user_id)
         result = await session.execute(query)
         user: UserModel = result.scalar_one_or_none()
+
         if user:
             return user
         raise HTTPException(detail='Usuario não encontrado', status_code=status.HTTP_404_NOT_FOUND)
@@ -53,9 +54,13 @@ async def put_user(user_id: int, user: UserModel, db: AsyncSession = Depends(get
         user_up: UserModel = result.scalar_one_or_none()
 
         if user_up:
-            user_up = UserModel(**user)
-
+            user_up.name = user.name
+            user_up.email = user.email
+            user_up.password = user.password
+            
             await session.commit()
+
+            return user_up
         raise HTTPException(detail='Usuario não encontrado', status_code=status.HTTP_404_NOT_FOUND)
 
 
