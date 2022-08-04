@@ -8,7 +8,7 @@ from sqlalchemy.future import select
 from models.user_model import UserModel
 from schemas.user_schema import UserSchema
 
-from database.database import get_session
+from core.database import get_session
 
 
 router = APIRouter()
