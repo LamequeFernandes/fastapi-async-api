@@ -8,7 +8,12 @@ class Settings(BaseSettings):
     DB_URL: str = 'postgresql+asyncpg://postgres:postgres@localhost:5432/fastapi_teste'
     Base = declarative_base()
 
+    JWT_SECRET: str = ''
+    ALGORITHM: str = 'HS256'
+
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60*24*7
+
     class Config:
         case_sensitive = True
 
-settings = Settings()
+settings: Settings() = Settings()
