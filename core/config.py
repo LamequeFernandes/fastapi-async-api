@@ -5,7 +5,7 @@ from sqlalchemy.orm import declarative_base
 
 class Settings(BaseSettings): 
 
-    DB_URL: str = 'postgresql+asyncpg://postgres:postgres@localhost:5432/economizei'
+    DB_URL: str = 'postgresql+asyncpg://postgres:postgres@postgres_economizei:5432/economizei'
     Base = declarative_base()
 
     JWT_SECRET: str = ''

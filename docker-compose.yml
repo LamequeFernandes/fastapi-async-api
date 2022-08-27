@@ -1,10 +1,29 @@
 version: "3"
 
 services:
+  postgres_economizei:
+    image: mdillon/postgis:11
+    container_name: economizei_db
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "economizei"
+    ports:
+      - "5431:5432"
+    volumes:
+      - postgresVolume:/var/lib/postgresql/data
+      - postgresConfig:/etc/postgresql/11/main
+
   app:
     build: .
-    container_name: fastapi-teste
+    container_name: economizei_api
     ports:
-      - "8001:8001"
+      - "8002:8001"
     volumes:
       - ".:/app/"
+    depends_on:
+      - postgres_economizei
+
+volumes:
+  postgresVolume:
+  postgresConfig:
