@@ -12,11 +12,19 @@ from sqlalchemy.future import select
 
 class UserRepository:
 
-    @staticmethod
-    async def create(user: UserSchema, db: AsyncSession):
+    async def user_exists(self, id: int, db: AsyncSession):
+        async with db as session:
+            query_user = select(UserModel).filter(UserModel.id == id)
+            result_query = await session.execute(query_user)
+            user: UserModel = result_query.scalar()
+
+            if not user:
+                return None
+            return user
+
+    async def create(self, user: UserSchema, db: AsyncSession):
         try:
             new_user: UserSchema = UserModel(**user.dict())
-
             db.add(new_user)
             await db.commit()
         except Exception as erro:
@@ -25,8 +33,7 @@ class UserRepository:
 
         return new_user
     
-    @staticmethod
-    async def list_users(db: AsyncSession):
+    async def list_users(self, db: AsyncSession):
         async with db as session:
             try:
                 query_users = select(UserModel).order_by(UserModel.id)
@@ -42,55 +49,42 @@ class UserRepository:
                         detail='Nenhum usuário encontrado')
             return users
     
-    @staticmethod
-    async def show(id: int, db: AsyncSession):
+    async def show(self, id: int, db: AsyncSession):
+        user = await self.user_exists(id=id, db=db)
+
+        if not user:
+            raise HTTPException(detail='Usuario não encontrado', 
+                                status_code=status.HTTP_404_NOT_FOUND)            
+        return user
+
+    async def delete(self, id: int, db: AsyncSession):
+        user = await self.user_exists(id=id, db=db)
+
+        if not user:
+            raise HTTPException(detail='Usuario não encontrado', 
+                                status_code=status.HTTP_404_NOT_FOUND) 
+
         async with db as session:
-            try:
-                query_user = select(UserModel).filter(UserModel.id == id)
-                result_query = await session.execute(query_user)
-                user: UserModel = result_query.scalar()
-            except Exception as error:
-                raise HTTPException(
-                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-                        detail=error)
-            if not user:
-                raise HTTPException(detail='Usuario não encontrado', 
-                                    status_code=status.HTTP_404_NOT_FOUND)
-
-            return user
-
-    @staticmethod
-    async def delete(id: int, db: AsyncSession):
-        async with db as session:
-            query_user = select(UserModel).filter(UserModel.id == id)
-            result_query = await session.execute(query_user)
-            user_delete = result_query.scalar()
-
-            if not user_delete: 
-                raise HTTPException(detail='Usuario não encontrado', 
-                                    status_code=status.HTTP_404_NOT_FOUND)
-            
-            await session.delete(user_delete)
+            await session.delete(user)
             await session.commit()
 
             return dict(message = "Usuario deletado com sucesso")
 
-    @staticmethod
-    async def alter(id: int, body: UserSchema, db: AsyncSession):
+    async def alter(self, id: int, body: UserSchema, db: AsyncSession):
+            
         async with db as session:
             query_user = select(UserModel).filter(UserModel.id == id)
             result_query = await session.execute(query_user)
             user: UserModel = result_query.scalar()
 
-            if user:
-                body = body.dict()
+            if not user:
+                raise HTTPException(detail='Usuario não encontrado', 
+                                    status_code=status.HTTP_404_NOT_FOUND)
 
-                for key in body:
-                    if body[key] != None:
-                        setattr(user, key, body[key])
+            body = body.dict()
+            for key in body:
+                if body[key] != None:
+                    setattr(user, key, body[key])
 
-                await session.commit()
-                return user
-
-            raise HTTPException(detail='Usuario não encontrado', 
-                                status_code=status.HTTP_404_NOT_FOUND)
+            await session.commit()
+            return user
