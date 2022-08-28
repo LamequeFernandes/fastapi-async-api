@@ -1,4 +1,4 @@
-# FastAPI com SQLModel ou SQLAlchemy
+# FastAPI com SQLAlchemy, Alembic e Docker
 
 <p align="center">
     <img width="100" src="./assets/fastapi.svg">
