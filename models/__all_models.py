@@ -1,2 +1,2 @@
-from models.book_model import BookModel
+from models.renda_model import RendaModel
 from models.user_model import UserModel
