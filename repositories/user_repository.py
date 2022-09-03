@@ -4,7 +4,7 @@ from models.user_model import UserModel
 
 from fastapi import HTTPException, status
 
-from schemas.user_schema import UserSchema
+from schemas.user_schema import UserSchemaCreate, UserSchemaUp
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -22,9 +22,9 @@ class UserRepository:
                 return None
             return user
 
-    async def create(self, user: UserSchema, db: AsyncSession):
+    async def create(self, user: UserSchemaCreate, db: AsyncSession):
         try:
-            new_user: UserSchema = UserModel(**user.dict())
+            new_user: UserSchemaCreate = UserModel(**user.dict())
             db.add(new_user)
             await db.commit()
         except Exception as erro:
@@ -70,7 +70,7 @@ class UserRepository:
 
             return dict(message = "Usuario deletado com sucesso")
 
-    async def alter(self, id: int, body: UserSchema, db: AsyncSession):
+    async def alter(self, id: int, body: UserSchemaUp, db: AsyncSession):
             
         async with db as session:
             query_user = select(UserModel).filter(UserModel.id == id)

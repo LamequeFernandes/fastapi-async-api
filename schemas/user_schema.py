@@ -1,12 +1,12 @@
 from typing import Optional, Any
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 class UserSchemaBase(BaseModel):
     id: Optional[int]
     name: str
-    email: EmailStr
+    email: str
     is_admin: Optional[bool]
     created_at: Optional[Any]
 
@@ -19,6 +19,6 @@ class UserSchemaCreate(UserSchemaBase):
 
 class UserSchemaUp(UserSchemaBase):
     name: Optional[str]
-    email: Optional[EmailStr]
+    email: Optional[str]
     is_admin: Optional[bool]
     password: Optional[str]
