@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Boolean
 
 from core.config import settings
 
@@ -11,5 +11,6 @@ class UserModel(settings.Base):
     id: int = Column(Integer, primary_key=True, autoincrement=True)
     name: str = Column(String(100), nullable=False)
     email: str = Column(String(200), nullable=False, unique=True)
-    password: str = Column(String(80), nullable=False)
+    password: str = Column(String(256), nullable=False)
     created_at: DateTime = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    is_admin: bool = Column(Boolean, default=False)
