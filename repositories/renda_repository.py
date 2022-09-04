@@ -13,8 +13,12 @@ from sqlalchemy.future import select
 
 class RendaRepository:
     
-    async def insert(self, renda: RendaSchema, db: AsyncSession):
-        new_renda: RendaModel = RendaModel(**renda.dict())
+    async def insert(self, renda: RendaSchema, id_user: int, db: AsyncSession):
+        new_renda: RendaModel = RendaModel(
+            amount=renda.amount,
+            description=renda.description,
+            user=id_user
+        )
 
         db.add(new_renda)
         await db.commit()

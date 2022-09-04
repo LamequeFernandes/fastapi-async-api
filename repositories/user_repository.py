@@ -5,6 +5,7 @@ from models.user_model import UserModel
 from fastapi import HTTPException, status
 
 from schemas.user_schema import UserSchemaCreate, UserSchemaUp
+from core.security import checked_password, generate_hash_password
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -24,7 +25,12 @@ class UserRepository:
 
     async def create(self, user: UserSchemaCreate, db: AsyncSession):
         try:
-            new_user: UserSchemaCreate = UserModel(**user.dict())
+            new_user: UserModel = UserModel(
+                name=user.name,
+                email=user.email,
+                password=generate_hash_password(user.password),
+                is_admin=user.is_admin
+            )
             db.add(new_user)
             await db.commit()
         except Exception as erro:
