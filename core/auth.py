@@ -1,4 +1,3 @@
-from unittest import result
 from pytz import timezone
 
 from typing import Optional, List
@@ -18,8 +17,8 @@ from core.security import checked_password
 from pydantic import EmailStr
 
 
-oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f'/usuarios/login'
+oauth2_schema = OAuth2PasswordBearer(
+    tokenUrl=f'/login'
 )
 
 
@@ -27,7 +26,7 @@ async def authenticate(email: EmailStr, password: str, db: AsyncSession) -> Opti
     async with db as session:
         query = select(UserModel).filter(UserModel.email == email)
         result = await session.execute(query)
-        user: UserModel = result.scalars().unique().one_or_none()
+        user: UserModel = result.scalar()
 
         if not user:
             return None
@@ -37,4 +36,25 @@ async def authenticate(email: EmailStr, password: str, db: AsyncSession) -> Opti
 
         return user
 
+
+def _create_token(type_token: str, time_life: timedelta, sub: str) -> str:
+    payload = {}
+
+    sp = timezone('America/Sao_Paulo')
+    expira = datetime.now(tz=sp) + time_life
+
+    payload['type'] = type_token
+    payload['exp'] = expira
+    payload['iat'] = datetime.now(tz=sp)
+    payload['sub'] = str(sub)
+
+    return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
+
+
+def create_token_acess(sub: str) -> str:
+    return _create_token(
+        type_token='access_token',
+        time_life=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+        sub=sub
+    )
 

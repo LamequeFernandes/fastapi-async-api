@@ -1,7 +1,7 @@
 from passlib.context import CryptContext
 
 
-CRIPTO = CryptContext(schemas=['bcrypt'], deprecated='auto')
+CRIPTO = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 
 def checked_password(password: str, hash_password: str) -> bool:
